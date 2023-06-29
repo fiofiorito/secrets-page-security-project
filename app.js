@@ -74,15 +74,15 @@ app.get('/', function (req, res) {
     res.render('home');
 });
 
-app.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile'] })
-);
+app.get('/auth/google', function (req, res) {
+    passport.authenticate('google', { scope: ['profile'] })(req, res);
+});
 
 
 app.get('/auth/google/secrets',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
-        res.redirect('/secrets');
+        res.redirect('/');
     });
 
 app.get('/login', function (req, res) {
@@ -118,7 +118,7 @@ app.post('/register', function (req, res) {
             console.log(err);
             res.redirect('/register');
         } else {
-            passport.authenticate('google')(req, res, function () {
+            passport.authenticate('local')(req, res, function () {
                 res.redirect('/secrets');
             })
         }
@@ -134,7 +134,7 @@ app.post('/login', function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            passport.authenticate('google')(req, res, function () {
+            passport.authenticate('local')(req, res, function () {
                 res.redirect('/secrets');
             })
         }
