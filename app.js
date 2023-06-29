@@ -19,7 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const userSchema = new mongoose.Schema({
     email: String,
-    password: String
+    password: String,
+    secret: String
 });
 
 
@@ -36,6 +37,29 @@ app.get('/login', function (req, res) {
 
 app.get('/register', function (req, res) {
     res.render('register');
+});
+
+app.get('/submit', function (req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    User.findOne({ email: username })
+        .then(function (foundUser, err) {
+            if (foundUser) {
+                res.render('submit');
+            } else {
+                console.log(err);
+            }
+        })
+})
+
+app.get("/logout", function (req, res, next) {
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.redirect("/");
+    });
 });
 
 app.post('/register', function (req, res) {
@@ -72,13 +96,30 @@ app.post('/login', function (req, res) {
                         }
                     });
                 }
-
-
-
             }
         })
 })
 
+app.post("/submit", function (req, res) {
+    const submittedSecret = req.body.secret;
+    // i need to fix the id search because it doesnt work
+    User.findById(_id = req.newUser.id)
+        .then(function (err, foundUser) {
+            if (err) {
+                console.log(err);
+            } else {
+                foundUser.secret == submittedSecret;
+                foundUser.save()
+                    .then(function (err) {
+                        if (!err) {
+                            res.redirect('/secrets');
+                        } else {
+                            console.log(err);
+                        }
+                    })
+            }
+        });
+});
 
 
 
